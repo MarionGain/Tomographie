@@ -33,6 +33,7 @@ image* imageAlea();
 int penaliteLignes(image* img, ensemble* signature);
 int penaliteDiagD(image* img);
 int penaliteDiag(image* img);
+int penaliteColonnes(image* img, ensemble* signature);
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -52,7 +53,7 @@ int main(int argc, const char * argv[]) {
     s->diagD = diagD;
     s->diagM = diagM;
     DessineImage(img);
-    printf("%d", penaliteLignes(img, s));
+    printf("%d", penaliteColonnes(img, s));
 
    // printf("%d", penaliteLignes(img));
     return 0;
@@ -166,15 +167,20 @@ int penaliteDiagD(image* img){
 //}
 
 
-
-int penaliteColonnes(image* img){
+// penalite colonnes OK
+int penaliteColonnes(image* img, ensemble* signature){
     int penalite = 0;
-    
-    
+    int sommeColonne = 0;
+    for (int j = 0; j < img->n; j++){
+        for(int i = 0; i < img->n; i++){
+            sommeColonne += img->tab[i][j];
+        }
+        printf("Somme colonne : %d\n", sommeColonne);
+        penalite += fabs(signature->colonnes[j] - sommeColonne);
+        sommeColonne = 0;
+    }
     return penalite;
 }
-
-
 
 int penaliteDiagM(image* img){
     
