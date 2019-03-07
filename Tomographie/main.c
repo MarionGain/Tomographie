@@ -53,7 +53,7 @@ int main(int argc, const char * argv[]) {
     s->diagD = diagD;
     s->diagM = diagM;
     DessineImage(img);
-    printf("%d", penaliteColonnes(img, s));
+    printf("%d", penaliteDiagM(img));
 
    // printf("%d", penaliteLignes(img));
     return 0;
@@ -197,17 +197,31 @@ int penaliteDiagM(image* img){
         for (int j = 0; j <= i; j++) {
             k = i - j;
             printf("tab[%d][%d] : %d |",k,j,img->tab[k][j]);
-            temp += img->tab[k][j];
+            temp = img->tab[k][j];
             
             penalite += temp;
         }
     }
-    
+    printf("Penalité première moitié : %d", penalite);
     // deuxieme moitie
-    
-    
+    k = 0;
+    for(int j = 0; j < (img->n)-1; j ++){
+        k = j;
+        printf("Penalite de la diagonale : %d\n", temp);
+        temp = 0;
+        for (int i = 3; i > j ; i--) {
+            k++;
+            printf("tab[%d][%d] : %d |",i,k,img->tab[i][k]);
+            temp = img->tab[i][k];
+            penalite += temp;
+        }
+    }
     return penalite;
 }
+
+
+
+
 
 // initialise une matrice
 ensemble* initMat (){
