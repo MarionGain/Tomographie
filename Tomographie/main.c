@@ -42,9 +42,17 @@ int main(int argc, const char * argv[]) {
     
     
     
-    ensemble* s = initMat();
+    ensemble* s;// = initMat();
+    int lignes [] = {2,2,2,3};
+    int colonnes [] = {2,1,3,3};
+    int diagD [] = {1,1,2,1,1,2,1};
+    int diagM [] = {0,0,2,4,1,1,1};
+    s->lignes = lignes;
+    s->colonnes = colonnes;
+    s->diagD = diagD;
+    s->diagM = diagM;
     DessineImage(img);
-    printf("%d", penaliteLignes(img));
+    printf("%d", penaliteLignes(img, s));
 
    // printf("%d", penaliteLignes(img));
     return 0;
@@ -84,6 +92,7 @@ void DessineImage(image* img){
     }
 }
 
+// penalite ligne ok
 int penaliteLignes(image* img, ensemble* signature){
     int penalite = 0;
     int sommeLigne = 0;
@@ -91,7 +100,8 @@ int penaliteLignes(image* img, ensemble* signature){
         for(int j = 0; j < img->n; j++){
             sommeLigne += img->tab[i][j];
         }
-        penalite += signature->lignes[i] - sommeLigne;
+        printf("Somme ligne : %d\n", sommeLigne);
+        penalite += fabs(signature->lignes[i] - sommeLigne);
         sommeLigne = 0;
     }
     return penalite;
@@ -193,4 +203,23 @@ int penaliteDiagM(image* img){
     return penalite;
 }
 
+// initialise une matrice
+ensemble* initMat (){
+    // alloue memoire pour la matrice
+    ensemble* m = (ensemble*) calloc(1, sizeof(ensemble));
+    m->n = rand()%9; // nombre random de taille d'image
+    
+    // initialise les lignes
+    m->lignes = (int*) calloc(m->n, sizeof(int));
+   
+    // initialise les colonnes
+    m->colonnes = (int*) calloc(m->n, sizeof(int));
 
+    // initialise les diagonales montantes
+    int tailleDiag = 2*(m->n)-1;
+    m->diagM = (int*) calloc(tailleDiag, sizeof(int));
+
+    // initialise les diagonales descendantes
+    m->diagD = (int*) calloc(tailleDiag, sizeof(int));
+    return m;
+}
