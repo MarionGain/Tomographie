@@ -38,9 +38,13 @@ int main(int argc, const char * argv[]) {
     // insert code here...
      srand(time(NULL));
     image* img = imageAlea();
+    
+    
+    
+    
     ensemble* s = initMat();
     DessineImage(img);
-    printf("%d", penaliteDiagD(img));
+    printf("%d", penaliteLignes(img));
 
    // printf("%d", penaliteLignes(img));
     return 0;
@@ -86,7 +90,6 @@ int penaliteLignes(image* img, ensemble* signature){
     for (int i = 0; i < img->n; i++){
         for(int j = 0; j < img->n; j++){
             sommeLigne += img->tab[i][j];
-            
         }
         penalite += signature->lignes[i] - sommeLigne;
         sommeLigne = 0;
@@ -187,51 +190,7 @@ int penaliteDiagM(image* img){
     // deuxieme moitie
     
     
-    
-    
-    
     return penalite;
 }
 
-
-// initialise une matrice avec 1 et 0 aleatoires
-ensemble* initMat (){
-    // alloue memoire pour la matrice
-    ensemble* m = (ensemble*) calloc(1, sizeof(ensemble));
-    m->n = rand()%9; // nombre random de taille d'image
-    
-    // initialise les lignes
-    m->lignes = (int*) calloc(m->n, sizeof(int));
-    for (int i = 0; i < m->n; i ++){
-        m->lignes[i] = rand()%2;
-        //  printf("%d", m->lignes[i]);
-    }
-    //  printf("\n");
-    
-    // initialise les colonnes
-    m->colonnes = (int*) calloc(m->n, sizeof(int));
-    for (int i = 0; i < m->n; i ++){
-        m->colonnes[i] = rand()%2;
-        //printf("%d", m->colonnes[i]);
-    }
-    //  printf("\n");
-    
-    // initialise les diagonales montantes
-    int tailleDiag = 2*(m->n)-1;
-    m->diagM = (int*) calloc(tailleDiag, sizeof(int));
-    for (int i = 0; i < tailleDiag; i ++){
-        m->diagM[i] = rand()%2;
-        // printf("%d", m->diagM[i]);
-    }
-    // printf("\n");
-    
-    // initialise les diagonales descendantes
-    m->diagD = (int*) calloc(tailleDiag, sizeof(int));
-    for (int i = 0; i < tailleDiag; i ++){
-        m->diagD[i] = rand()%2;
-        //printf("%d", m->diagD[i]);
-    }
-    // printf("\n");
-    return m;
-}
 
