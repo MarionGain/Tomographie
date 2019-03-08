@@ -36,26 +36,29 @@ int penaliteDiagM(image* img, ensemble* signature);
 //int penaliteDiagMontante(image* img, ensemble* signature);
 int penaliteColonnes(image* img, ensemble* signature);
 int cout (image* img, ensemble* signature);
+void rechercheImage (ensemble* signature);
 
 
 int main(int argc, const char * argv[]) {
     // insert code here...
      srand(time(NULL));
     image* img = imageAlea();
-    ensemble* s;// = initMat();
-    int lignes [] = {2,2,2,3};
-    int colonnes [] = {2,1,3,3};
-    int diagD [] = {1,1,2,1,1,2,1};
-    int diagM [] = {0,0,2,4,1,1,1};
-    s->lignes = lignes;
-    s->colonnes = colonnes;
-    s->diagD = diagD;
-    s->diagM = diagM;
-    DessineImage(img);
-    printf("%d", cout(img, s));
+    ensemble* s = initMat();
+   // DessineImage(img);
+    //printf("%d", cout(img, s));
+    rechercheImage(s);
 
    // printf("%d", penaliteLignes(img));
     return 0;
+}
+
+void rechercheImage (ensemble* signature){
+    // calcul du nombre de 1 dans l'image
+    int nombrePoints = 0;
+    for(int i = 0; i < signature->n; i++){
+        nombrePoints += signature->colonnes[i];
+    }
+    printf("Nombre points : %d\n", nombrePoints);
 }
 
 // OK
@@ -67,8 +70,6 @@ int cout (image* img, ensemble* signature){
     cout += penaliteLignes(img, signature);
     return cout;
 }
-
-
 
 // Ok
 int penaliteDiagM(image* img, ensemble* signature){
@@ -161,22 +162,33 @@ int penaliteLignes(image* img, ensemble* signature){
 
 // initialise une matrice
 ensemble* initMat (){
+    
+    int lignes [] = {2,2,2,3};
+    int colonnes [] = {2,1,3,3};
+    int diagD [] = {1,1,2,1,1,2,1};
+    int diagM [] = {0,0,2,4,1,1,1};
+    
     // alloue memoire pour la matrice
     ensemble* m = (ensemble*) calloc(1, sizeof(ensemble));
-    m->n = rand()%9; // nombre random de taille d'image
+    m->n = 4;
+  //  m->n = rand()%9; // nombre random de taille d'image
     
     // initialise les lignes
     m->lignes = (int*) calloc(m->n, sizeof(int));
-   
+    m->lignes = lignes;
     // initialise les colonnes
     m->colonnes = (int*) calloc(m->n, sizeof(int));
-
+    m->colonnes = colonnes;
+    
     // initialise les diagonales montantes
     int tailleDiag = 2*(m->n)-1;
     m->diagM = (int*) calloc(tailleDiag, sizeof(int));
-
+    m->diagM = diagM;
+    
     // initialise les diagonales descendantes
     m->diagD = (int*) calloc(tailleDiag, sizeof(int));
+    m->diagD = diagD;
+    
     return m;
 }
 
