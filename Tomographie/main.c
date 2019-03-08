@@ -35,6 +35,8 @@ int penaliteDiagD(image* img, ensemble* signature);
 int penaliteDiagM(image* img, ensemble* signature);
 //int penaliteDiagMontante(image* img, ensemble* signature);
 int penaliteColonnes(image* img, ensemble* signature);
+int cout (image* img, ensemble* signature);
+
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -50,11 +52,23 @@ int main(int argc, const char * argv[]) {
     s->diagD = diagD;
     s->diagM = diagM;
     DessineImage(img);
-    printf("%d", penaliteDiagM(img, s));
+    printf("%d", cout(img, s));
 
    // printf("%d", penaliteLignes(img));
     return 0;
 }
+
+// OK
+int cout (image* img, ensemble* signature){
+    int cout = 0;
+    cout += penaliteDiagM(img, signature);
+    cout += penaliteDiagD(img, signature);
+    cout += penaliteLignes(img, signature);
+    cout += penaliteLignes(img, signature);
+    return cout;
+}
+
+
 
 // Ok
 int penaliteDiagM(image* img, ensemble* signature){
