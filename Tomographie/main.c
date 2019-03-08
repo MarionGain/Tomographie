@@ -56,16 +56,9 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
-
-
-
-
+// Ok
 int penaliteDiagM(image* img, ensemble* signature){
-     int sommeDiag = 0; // remplacer par un tableau de img->n cases
-                        // y placer à l'indice 0 -> img->n la valeur de sommeDiag
-                        // à la fin faire une boucle qui compare le premier tableau avec
-                        // la première moitié du vecteur diag puis le second avec la seconde
-                        // moitié du vecteur diag
+     int sommeDiag = 0;
     // premiere moitie
     
     int penalite = 0;
@@ -83,135 +76,25 @@ int penaliteDiagM(image* img, ensemble* signature){
         penalite += fabs(signature->diagM[s] - sommeDiag);
         sommeDiag = 0;
         s++;
-
     }
-//    for(int i = (img->n)-1; i >= 0; i--){
-//        k = 0;
-//        printf("Penalite de la diagonale : %d\n", sommeDiag);
-//        printf("Pour i = %d\n", i);
-//        for(int j = i; j >= 0; j--){
-//            k = i-j;
-//            printf("tab[%d][%d] : %d |",k,j,img->tab[k][j]);
-//            sommeDiag += img->tab[k][j];
-//        }
-//        penalite += fabs(signature->diagM[s] - sommeDiag);
-//        sommeDiag = 0;
-//        s++;
-//
-//    }
-//    for (int i = (img->n-1); i >=0; i --){
-//        k = 0;
-//        printf("Penalite de la diagonale : %d\n", sommeDiag);
-//        printf("Pour i = %d\n", i);
-//        int j = img->n - i;
-//        printf("tab[%d][%d] : %d |",i,j,img->tab[i][j]);
-//        sommeDiag += img->tab[i][j];
-//        penalite += fabs(signature->diagM[s] - sommeDiag);
-//        sommeDiag = 0;
-//         s++;
-//    }
-    
-   
-//    for (int i = (img->n)-1; i >= 0; i--) {
-//            k = 0;
-//            printf("Penalite de la diagonale : %d\n", sommeDiag);
-//            printf("Pour i = %d\n", i);
-//            for (int j = 0; j <= i; j++) {
-//                k = i - j;
-//                printf("tab[%d][%d] : %d |",k,j,img->tab[k][j]);
-//                sommeDiag += img->tab[k][j];
-//            }
-//        //  penalite += fabs(signature->diagM[s] - sommeDiag);
-//            sommeDiag = 0;
-//    }
 
     printf("Somme première moitié : %d", sommeDiag);
     // deuxieme moitie
     k = 0;
     for(int j = 0; j < (img->n)-1; j ++){
-            k = j;
-            printf("Somme de la diagonale : %d\n", sommeDiag);
-            for (int i = 3; i > j ; i--) {
-                k++;
-                printf("tab[%d][%d] : %d |",i,k,img->tab[i][k]);
-                sommeDiag += img->tab[i][k];
-            }
-            penalite += fabs(signature->diagM[s] - sommeDiag);
-            sommeDiag = 0;
-            s++;
+        k = j;
+        printf("Somme de la diagonale : %d\n", sommeDiag);
+        for (int i = 3; i > j ; i--) {
+            k++;
+            printf("tab[%d][%d] : %d |",i,k,img->tab[i][k]);
+            sommeDiag += img->tab[i][k];
+        }
+        penalite += fabs(signature->diagM[s] - sommeDiag);
+        sommeDiag = 0;
+        s++;
     }
-    
-//
-//    printf("Somme de la diagonale totale : %d", sommeDiag);
-//    for (int i = 0; i < 2*(img->n)-1; i++){
-//        penalite += fabs(signature->diagM[i] - sommeDiag);
-//        sommeDiag = 0;
-//    }
-    
     return penalite;
 }
-
-int penaliteDiagMontante(image* img, ensemble* signature){
-    int sommeDiag = 0;
-    int penalite = 0;
-    int k = 0;
-    // int s = 0;
-        for (int i = (img->n)-1; i >= 0; i--) {
-            k = 0;
-            printf("Pour i = %d\n", i);
-            for (int j = 0; j <= i; j++) {
-            k = i - j;
-            printf("tab[%d][%d] : %d |",k,j,img->tab[k][j]);
-            sommeDiag += img->tab[k][j];
-            }
-            printf("Penalite de la diagonale : %d\n", sommeDiag);
-            sommeDiag = 0;
-            //   penalite += fabs(signature->diagM[s] - sommeDiag);
-           // printf("s = %d\n", s);
-           // printf("signature diag : %d\n", signature->diagM[s]);
-          // s++;
-        }
-    
-        // deuxieme moitie
-        k = 0;
-        for(int j = 0; j < (img->n)-1; j ++){
-            k = j;
-            printf("Somme de la diagonale : %d\n", sommeDiag);
-            for (int i = 3; i > j ; i--) {
-                k++;
-                printf("tab[%d][%d] : %d |",i,k,img->tab[i][k]);
-                sommeDiag += img->tab[i][k];
-            }
-            sommeDiag = 0;
-//            penalite += fabs(signature->diagM[s] - sommeDiag);
-//            printf("signature diag : %d\n", signature->diagM[s]);
-//            printf("s = %d\n", s);
-//           s++;
-        }
-    return penalite;
-}
-
-
-
-
-
-    //printf("Somme première moitié : %d", sommeDiag);
-   
-    
-    //
-    //    printf("Somme de la diagonale totale : %d", sommeDiag);
-    //    for (int i = 0; i < 2*(img->n)-1; i++){
-    //        penalite += fabs(signature->diagM[i] - sommeDiag);
-    //        sommeDiag = 0;
-    //    }
-
-
-
-
-
-
-// JE MARCHE À PARTIR DE LÀ
-
 
 image* initImage(){
     image* img = (image*) calloc(1, sizeof(image));
