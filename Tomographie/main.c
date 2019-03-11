@@ -41,6 +41,7 @@ void rechercheImage (ensemble* signature);
 //void echangeValeur(image* img, ensemble* signature, int c);
 void echangeValeur(image* img, int i, int j, int k, int l);
 void modification(image* img, ensemble* signature, int c);
+void afficheSignature(ensemble* signature);
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -58,9 +59,7 @@ int main(int argc, const char * argv[]) {
 //    s->diagD = diagD;
 //    s->diagM = diagM;
     DessineImage(img);
-    for(int i = 0; i < im->n; i++){
-         printf("%d\n", s->lignes[i]);
-    }
+    afficheSignature(s);
    
     printf("Cout : %d\n", cout(img, s));
     printf("Cout : %d\n", cout(im, s));
@@ -269,13 +268,14 @@ int penaliteLignes(image* img, ensemble* signature){
     return penalite;
 }
 
+//OK
 // initialise une matrice
 ensemble* initMat (){
     
     // alloue memoire pour la matrice
     ensemble* m = (ensemble*) malloc(sizeof(ensemble));
     m->n = 4;
-  //  m->n = rand()%9; // nombre random de taille d'image
+    //  m->n = rand()%9; // nombre random de taille d'image
     
     // initialise les lignes
     m->lignes = (int*) calloc(m->n, sizeof(int));
@@ -314,10 +314,6 @@ ensemble* initMat (){
     
     return m;
 }
-
-
-
-
 
 // OK
 int penaliteDiagD(image* img, ensemble* signature){
@@ -375,4 +371,26 @@ int penaliteColonnes(image* img, ensemble* signature){
         sommeColonne = 0;
     }
     return penalite;
+}
+
+// OK 
+void afficheSignature(ensemble* s){
+    printf("Signature : \n");
+    printf("Lignes : \n{ ");
+    for (int i = 0; i < s->n; i++) {
+        printf("%d ", s->lignes[i]);
+    }
+    printf("}\nColonnes :\n{ ");
+    for (int i = 0; i < s->n; i++) {
+        printf("%d ", s->colonnes[i]);
+    }
+    printf("}\nDiagD :\n{ ");
+    for (int i = 0; i < 2*(s->n)-1; i++) {
+        printf("%d ", s->diagD[i]);
+    }
+    printf("}\nDiagDM :\n{ ");
+    for (int i = 0; i < 2*(s->n)-1; i++) {
+        printf("%d ", s->diagM[i]);
+    }
+    printf("}\n\n");
 }
