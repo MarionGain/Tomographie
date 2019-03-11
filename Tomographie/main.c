@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 // -- Structures --
 typedef struct {
     int* lignes; // vecteur lignes
@@ -27,53 +28,36 @@ typedef struct{
 // -- Protocoles --
 
 ensemble* initMat ();
+ensemble* signature2();
 image* initImage();
-
 void DessineImage(image* img);
-image* imageAlea();
+image* imageAlea(int n, int nbPoints);
+void afficheSignature(ensemble* signature);
+void afficheImage(image* img);
+
+// Penalités
 int penaliteLignes(image* img, ensemble* signature);
 int penaliteDiagD(image* img, ensemble* signature);
 int penaliteDiagM(image* img, ensemble* signature);
-//int penaliteDiagMontante(image* img, ensemble* signature);
 int penaliteColonnes(image* img, ensemble* signature);
 int cout (image* img, ensemble* signature);
+
+// recherche d'une image à partir d'une signature
 void rechercheImage (ensemble* signature);
-//void echangeValeur(image* img, ensemble* signature, int c);
 void echangeValeur(image* img, int i, int j, int k, int l);
 void modification(image* img, ensemble* signature, int c);
-void afficheSignature(ensemble* signature);
+
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-     srand(time(NULL));
-    image* img = imageAlea(9);
-    
-    image* im = imageAlea(9);
-    ensemble* s = initMat();
-//    int lignes [] = {2,2,2,3};
-//    int colonnes [] = {2,1,3,3};
-//    int diagD [] = {1,1,2,1,1,2,1};
-//    int diagM [] = {0,0,2,4,1,1,1};
-//    s->colonnes = colonnes;
-//    s->lignes = lignes;
-//    s->diagD = diagD;
-//    s->diagM = diagM;
-    DessineImage(img);
+    long temps = 0;
+    srand(time(NULL));
+    ensemble* s = signature2();
     afficheSignature(s);
-   
-    printf("Cout : %d\n", cout(img, s));
-    printf("Cout : %d\n", cout(im, s));
-    //rechercheImage(s);
+    rechercheImage(s);
     
-    printf("Penalité lignes : %d\n", penaliteLignes(img,s));
-    printf("Penalité colonnes : %d\n", penaliteColonnes(img,s));
-    printf("Penalité diagM : %d\n", penaliteDiagM(img,s));
-    printf("Penalité diagD : %d\n", penaliteDiagD(img,s));
-    printf("Cout : %d\n", cout(img, s));
-    printf("Penalité lignes : %d\n", penaliteLignes(img,s));
-    printf("Penalité colonnes : %d\n", penaliteColonnes(img,s));
-    printf("Penalité diagM : %d\n", penaliteDiagM(img,s));
-    printf("Penalité diagD : %d\n", penaliteDiagD(img,s));
+    temps = (long) clock();
+    printf("Temps d'execution = %ld ms", temps);
     return 0;
 }
 
@@ -84,33 +68,41 @@ void rechercheImage (ensemble* signature){
         nombrePoints += signature->colonnes[i];
     }
     printf("Nombre points : %d\n", nombrePoints);
-    image* img = imageAlea(nombrePoints);
+    
+    // crée une image aléatoire avec nbPoints cases à 1
+    image* img = imageAlea(signature->n, nombrePoints);
     DessineImage(img);
-    int c = cout(img, signature);
-    printf("C : %d\n", c);
+   
+    printf("Cout de départ : %d\n", cout(img, signature));
     int compteur = 0;
-    while (cout(img, signature) != 0 && compteur < 10){
-        modification(img, signature, c);
+    
+    // tant que le cout n'est pas nul ou que l'on a pas atteint les 90 itérations
+    // on appelle la méthode d'échange de valeurs
+    while (cout(img, signature) != 0 ){ // && compteur < 3000
+        printf("Itération n° %d\n", compteur);
+        modification(img, signature, cout(img, signature));
         compteur ++;
     }
-   // DessineImage(img);
+    printf("Image finale : \n");
+    DessineImage(img);
+    afficheImage(img);
+    printf("Coût final : %d\n", cout(img, signature));
 }
 
 // echange les valeurs
 void echangeValeur(image* img, int i, int j, int k, int l){
 
-    // echange les valeurs
     int temp = img->tab[i][j];
     img->tab[i][j] = img->tab[k][l];
     img->tab[k][l] = temp;
 }
-
 
 void modification(image* img, ensemble* signature, int c){
     int i;
     int j;
     int k;
     int l;
+    // choisi deux indices aléatoires pour le changement de valeurs
     do {
         i = rand()%img->n;
         j = rand()%img->n;
@@ -123,23 +115,26 @@ void modification(image* img, ensemble* signature, int c){
     }
     while(img->tab[k][l] != 0);
 
-    
-    
     // echange les valeurs
     echangeValeur(img, i, j, k, l);
     printf("Image après échange : \n");
-    DessineImage(img);
+  //  DessineImage(img);
     int nouveauCout = cout(img, signature);
     printf("Ancien cout : %d, nouveau cout : %d\n", c, nouveauCout);
+    
+    // si le nouveau cout est supérieur au précédent on annule l'échange
     if( nouveauCout > c){
         echangeValeur(img,i,j,k,l);
-
-        // annuler l'echange
+      //  printf("L'image est celle de départ\n");
     }
-    DessineImage(img);
+    
+    // sinon on affecte le nouveau cout à c
+    else {
+     //   printf("L'image n'a pas changée\n");
+        c = nouveauCout;
+    }
+  //  DessineImage(img);
 }
-
-
 
 // OK
 int cout (image* img, ensemble* signature){
@@ -177,7 +172,7 @@ int penaliteDiagM(image* img, ensemble* signature){
 //            printf("tab[%d][%d] : %d |",k,j,img->tab[k][j]);
             sommeDiag += img->tab[k][j];
         }
-        penalite += fabs(signature->diagM[s] - sommeDiag);
+        penalite += abs(signature->diagM[s] - sommeDiag);
         sommeDiag = 0;
         s++;
     }
@@ -193,13 +188,15 @@ int penaliteDiagM(image* img, ensemble* signature){
 //            printf("tab[%d][%d] : %d |",i,k,img->tab[i][k]);
             sommeDiag += img->tab[i][k];
         }
-        penalite += fabs(signature->diagM[s] - sommeDiag);
+        penalite += abs(signature->diagM[s] - sommeDiag);
         sommeDiag = 0;
         s++;
     }
     return penalite;
 }
 
+//OK
+// initialisation d'une image vide
 image* initImage(){
     image* img = (image*) calloc(1, sizeof(image));
     img->tab = (int**) calloc(1, sizeof(int*));
@@ -207,13 +204,14 @@ image* initImage(){
     return img;
 }
 
-image* imageAlea(int nbPoints){
+//OK
+// Initialisation d'une matrice à nbPoints 1
+image* imageAlea(int n, int nbPoints){
     int compteur = 1;
     int temp;
     // allocations mémoire
     
     //int n = rand()%5;
-    int n = 4;
     image* img = (image*) malloc(sizeof(image));
     img->tab = (int**) malloc(n * sizeof(int*));
     img->n = n;
@@ -231,7 +229,6 @@ image* imageAlea(int nbPoints){
     
     // Cases random à 1
     while (compteur <= nbPoints){
-        
         int i = rand()%(img->n);
         int j = rand()%(img->n);
     
@@ -243,6 +240,7 @@ image* imageAlea(int nbPoints){
     return img;
 }
 
+// ok
 void DessineImage(image* img){
     for (int i = 0; i < img->n; i++){
         for(int j = 0; j < img->n; j++){
@@ -262,7 +260,7 @@ int penaliteLignes(image* img, ensemble* signature){
             sommeLigne += img->tab[i][j];
         }
 //        printf("Somme ligne : %d\n", sommeLigne);
-        penalite += fabs(signature->lignes[i] - sommeLigne);
+        penalite += abs(signature->lignes[i] - sommeLigne);
         sommeLigne = 0;
     }
     return penalite;
@@ -336,7 +334,7 @@ int penaliteDiagD(image* img, ensemble* signature){
         }
         //   printf("Penalite de la diagonale n° %d : %d\n", i,sommeDiag);
         //    printf("Signature de la diagonale n° : %d = %d\n",s, signature->diagD[s]);
-        penalite += fabs(signature->diagD[s] - sommeDiag);
+        penalite += abs(signature->diagD[s] - sommeDiag);
         s++;
     }
     
@@ -352,7 +350,7 @@ int penaliteDiagD(image* img, ensemble* signature){
             //   printf("tab[%d][%d] : %d |",k,j,img->tab[k][j]);
             sommeDiag += img->tab[k][j];
         }
-        penalite += fabs(signature->diagD[s] - sommeDiag);
+        penalite += abs(signature->diagD[s] - sommeDiag);
         s++;
     }
     return penalite;
@@ -367,13 +365,13 @@ int penaliteColonnes(image* img, ensemble* signature){
             sommeColonne += img->tab[i][j];
         }
 //        printf("Somme colonne : %d\n", sommeColonne);
-        penalite += fabs(signature->colonnes[j] - sommeColonne);
+        penalite += abs(signature->colonnes[j] - sommeColonne);
         sommeColonne = 0;
     }
     return penalite;
 }
 
-// OK 
+// OK
 void afficheSignature(ensemble* s){
     printf("Signature : \n");
     printf("Lignes : \n{ ");
@@ -393,4 +391,86 @@ void afficheSignature(ensemble* s){
         printf("%d ", s->diagM[i]);
     }
     printf("}\n\n");
+}
+
+void afficheImage(image* img){
+    for (int i = 0; i < img->n; i++){
+        for(int j = 0; j < img->n; j++){
+            if(img->tab[i][j]){
+                 printf("X | ");
+            }
+            else {
+                printf(" | ");
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+ensemble* signature2(){
+    ensemble* signature = (ensemble*) malloc(sizeof(ensemble));
+    signature->n = 8;
+    //  m->n = rand()%9; // nombre random de taille d'image
+    
+    // initialise les lignes
+    signature->lignes = (int*) calloc(signature->n, sizeof(int));
+    signature->lignes[0] = 2;
+    signature->lignes[1] = 2;
+    signature->lignes[2] = 3;
+    signature->lignes[3] = 6;
+    signature->lignes[4] = 3;
+    signature->lignes[5] = 2;
+    signature->lignes[6] = 2;
+    signature->lignes[7] = 2;
+
+    // initialise les colonnes
+    signature->colonnes = (int*) calloc(signature->n, sizeof(int));
+    signature->colonnes[0] = 1;
+    signature->colonnes[1] = 1;
+    signature->colonnes[2] = 6;
+    signature->colonnes[3] = 3;
+    signature->colonnes[4] = 3;
+    signature->colonnes[5] = 6;
+    signature->colonnes[6] = 1;
+    signature->colonnes[7] = 1;
+    
+    // initialise les diagonales montantes
+    int tailleDiag = 2*(signature->n)-1;
+    signature->diagM = (int*) calloc(tailleDiag, sizeof(int));
+    signature->diagM[0] = 0;
+    signature->diagM[1] = 0;
+    signature->diagM[2] = 0;
+    signature->diagM[3] = 2;
+    signature->diagM[4] = 4;
+    signature->diagM[5] = 1;
+    signature->diagM[6] = 2;
+    signature->diagM[7] = 4;
+    signature->diagM[8] = 3;
+    signature->diagM[9] = 3;
+    signature->diagM[10] = 1;
+    signature->diagM[11] = 1;
+    signature->diagM[12] = 1;
+    signature->diagM[13] = 0;
+    signature->diagM[14] = 0;
+
+    // initialise les diagonales descendantes
+    signature->diagD = (int*) calloc(tailleDiag, sizeof(int));
+    signature->diagD[0] = 0;
+    signature->diagD[1] = 0;
+    signature->diagD[2] = 1;
+    signature->diagD[3] = 2;
+    signature->diagD[4] = 1;
+    signature->diagD[5] = 2;
+    signature->diagD[6] = 3;
+    signature->diagD[7] = 4;
+    signature->diagD[8] = 2;
+    signature->diagD[9] = 1;
+    signature->diagD[10] = 3;
+    signature->diagD[11] = 2;
+    signature->diagD[12] = 1;
+    signature->diagD[13] = 0;
+    signature->diagD[14] = 0;
+
+    return signature;
 }
